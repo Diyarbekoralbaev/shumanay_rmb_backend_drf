@@ -32,6 +32,8 @@ INSTALLED_APPS = [
 
     'django_redis',
 
+    'corsheaders',
+
     'users',
     'shared',
     'shrmb_app',
@@ -175,3 +177,7 @@ CACHES = {
         }
     }
 }
+
+
+# CORS
+CORS_ALLOW_ALL_ORIGINS = True
