@@ -13,7 +13,7 @@ SECRET_KEY = 'django-insecure-1z*u#@(=ta=j+-y(h2kpb%4+!qcres*phn^w%3x7b3r!3iihwv
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = ['127.0.0.1', 'localhost', 'medical.diyarbek.ru', 'www.medical.diyarbek.ru']
+ALLOWED_HOSTS = ['*']
 
 # Application definition
 
@@ -181,3 +181,9 @@ CACHES = {
 
 # CORS
 CORS_ALLOW_ALL_ORIGINS = True
+
+# SSL
+SECURE_SSL_REDIRECT = True
+SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_SECURE = True
+SECURE_HSTS_SECONDS = 31536000  # Example: 1 year
