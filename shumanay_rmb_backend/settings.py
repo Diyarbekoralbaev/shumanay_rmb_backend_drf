@@ -181,15 +181,10 @@ CACHES = {
 
 
 # CORS
-CORS_ALLOW_ALL_ORIGINS = True
-
 CORS_ORIGIN_WHITELIST = [
     'http://medical.diyarbek.ru',
     'https://medical.diyarbek.ru',  # If using HTTPS
 ]
 
 CORS_ALLOW_CREDENTIALS = True
-
-
-# SSL
-SECURE_SSL_REDIRECT = True
+CORS_ALLOW_ALL_ORIGINS = True
