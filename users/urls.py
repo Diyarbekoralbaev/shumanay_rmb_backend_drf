@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import SignupView, LoginView, RefreshView, ProtectedView, MeView, ChangePasswordView, LogoutView
+from .views import SignupView, LoginView, RefreshView, ProtectedView, MeView, ChangePasswordView, LogoutView, ForgotPasswordView, VerifyOTPView
 
 urlpatterns = [
     path('signup/', SignupView.as_view(), name='signup'),
@@ -9,4 +9,7 @@ urlpatterns = [
     path('user/me/', MeView.as_view(), name='get_user_info'),  # Changed the name to remove spaces
     path('change-password/', ChangePasswordView.as_view(), name='change_password'),  # Changed the name to remove spaces
     path('logout/', LogoutView.as_view(), name='logout'),
+
+    path('forgot-password/', ForgotPasswordView.as_view(), name='forgot_password'),
+    path('verify-otp/', VerifyOTPView.as_view(), name='verify_otp'),
 ]

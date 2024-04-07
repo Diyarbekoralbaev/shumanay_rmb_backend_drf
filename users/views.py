@@ -5,11 +5,15 @@ from rest_framework.response import Response
 from rest_framework.exceptions import AuthenticationFailed
 from rest_framework_simplejwt.authentication import JWTAuthentication
 
-from .models import UserModel
-from .serializers import SignupSerializer, LoginSerializer, ChangePasswordSerializer
+from .models import UserModel, OTPModel
+from .serializers import SignupSerializer, LoginSerializer, ChangePasswordSerializer, ForgotPasswordSerializer, \
+    ConfirmForgotPasswordSerializer
 from django.contrib.auth.hashers import make_password, check_password
 from rest_framework_simplejwt.tokens import AccessToken, RefreshToken
 from drf_yasg.utils import swagger_auto_schema
+
+from .utils import send_otp, generate_otp
+
 
 @swagger_auto_schema(
     tags=['auth'],
@@ -132,3 +136,48 @@ class LogoutView(APIView):
             return Response({'message': 'User logged out successfully'})
         except Exception as e:
             return Response({'message': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+
+class ForgotPasswordView(APIView):
+    @swagger_auto_schema(
+        request_body=ForgotPasswordSerializer,
+        tags=['auth']
+    )
+    def post(self, request):
+        serializer = ForgotPasswordSerializer(data=request.data)
+        if serializer.is_valid():
+            email = serializer.validated_data['email']
+            user = UserModel.objects.filter(email=email).first()
+            if user:
+                otp_code = generate_otp()
+                print(send_otp(email=email, otp=otp_code))
+                print(otp_code)
+                OTPModel.objects.create(user=user, otp=otp_code)
+                return Response({'message': 'OTP sent successfully'})
+            raise AuthenticationFailed('Email does not exist')
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class VerifyOTPView(APIView):
+    @swagger_auto_schema(
+        request_body=ConfirmForgotPasswordSerializer,
+        tags=['auth']
+    )
+    def post(self, request):
+        serializer = ConfirmForgotPasswordSerializer(data=request.data)
+        if serializer.is_valid():
+            email = serializer.validated_data['email']
+            otp_code = serializer.validated_data['otp_code']
+            new_password = serializer.validated_data['new_password']
+            user = UserModel.objects.filter(email=email).first()
+            if user:
+                otp = OTPModel.objects.filter(user=user, otp=otp_code).first()
+                if otp and not otp.is_expired():
+                    user.set_password(new_password)
+                    user.save()
+                    otp.delete()
+                    return Response({'message': 'Password changed successfully'})
+                raise AuthenticationFailed('Invalid OTP')
+            raise AuthenticationFailed('Email does not exist')
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
