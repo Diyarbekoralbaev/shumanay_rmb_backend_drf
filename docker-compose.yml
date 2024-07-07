@@ -17,10 +17,22 @@ services:
       - "8000:8000"
     depends_on:
       - redis
+      - celery
     environment:
       - DEBUG=1
       - SECRET_KEY=django-insecure-+mpcpcql9g1%r_v*a2iny5gqtdynr@t_$zd)xam9jzq_&l()u*
       - REDIS_URL=redis://redis:6379/1
+
+  celery:
+    build: .
+    command: celery -A shumanay_rmb_backend worker --loglevel=info
+    volumes:
+      - .:/app
+    depends_on:
+      - redis
+    environment:
+      - REDIS_URL=redis://redis:6379/1
+      - CELERY_BROKER_URL=redis://redis:6379/1
 
 volumes:
   redis_data:
